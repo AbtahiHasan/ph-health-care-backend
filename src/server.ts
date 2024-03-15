@@ -3,8 +3,8 @@ import { app } from "./app";
 
 const main = async () => {
   try {
-    const server: Server = app.listen(3000, () => {
-      console.log("server running at", 3000);
+    const server: Server = app.listen(5000, () => {
+      console.log("server running at", 5000);
     });
   } catch (error) {
     console.log(error);
