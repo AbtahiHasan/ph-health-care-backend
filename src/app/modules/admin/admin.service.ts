@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
-const getAdmins = async (query: Record<string, string>) => {
+const getAdmins = async (query: Record<string, unknown>) => {
   const { searchTerms, ...filterData } = query;
   const andCondition: Prisma.AdminWhereInput[] = [];
 

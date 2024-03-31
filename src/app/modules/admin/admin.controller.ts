@@ -4,9 +4,14 @@ import sendResponse from "../../utils/sendResponse";
 import AdminServices from "./admin.service";
 
 const getAdmins = catchAsync(async (req, res) => {
-  const result = await AdminServices.getAdmins(
-    req?.query as Record<string, string>
-  );
+  const filter = pick(req.query, [
+    "searchTerms",
+    "name",
+    "email",
+    "contactNumber",
+  ]);
+
+  const result = await AdminServices.getAdmins(filter);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
