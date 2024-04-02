@@ -1,4 +1,4 @@
-import { Admin, Prisma, PrismaClient, UserStatus } from "@prisma/client";
+import { Admin, Prisma, UserStatus } from "@prisma/client";
 
 import prisma from "../../lib/prisma";
 
@@ -28,6 +28,10 @@ const getAdmins = async (query: Record<string, unknown>, options: any) => {
       })),
     });
   }
+
+  andCondition.push({
+    isDeleted: false,
+  });
 
   const whereCondition: Prisma.AdminWhereInput = {
     AND: andCondition,
@@ -61,6 +65,7 @@ const getAdminById = async (id: string) => {
   const result = await prisma.admin.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -71,6 +76,7 @@ const updateAdminDataById = async (id: string, data: Partial<Admin>) => {
   const isExits = await prisma.admin.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -91,6 +97,7 @@ const deleteAdminById = async (id: string): Promise<Admin | null> => {
   const isExits = await prisma.admin.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
