@@ -1,11 +1,12 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
-const db = new PrismaClient();
+import prisma from "../../lib/prisma";
 
 const getAdmins = async (query: Record<string, unknown>, options: any) => {
   const { searchTerms, ...filterData } = query;
+  const { skip, limit, sortOrder, sortBy } = options;
   const andCondition: Prisma.AdminWhereInput[] = [];
-  const { sortBy, limit, page } = options;
+
   const searchFields = ["name", "email"];
   if (query?.searchTerms) {
     andCondition.push({
@@ -33,13 +34,27 @@ const getAdmins = async (query: Record<string, unknown>, options: any) => {
   };
 
   console.log({ AND: andCondition });
-  const result = await db.admin.findMany({
+  const result = await prisma.admin.findMany({
     where: whereCondition,
-    skip: (Number(page || "1") - 1) * limit || 20,
-    take: Number(limit || 20),
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
   });
 
-  return result;
+  const total = await prisma.admin.count({
+    where: whereCondition,
+  });
+
+  return {
+    data: result,
+    meta: {
+      page: options?.page || 1,
+      limit: options?.limit || 10,
+      total,
+    },
+  };
 };
 
 const AdminServices = { getAdmins };
