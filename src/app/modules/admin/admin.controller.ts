@@ -33,6 +33,32 @@ const getAdminById = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const updateAdminDataById = catchAsync(async (req, res) => {
+  const result = await AdminServices.updateAdminDataById(
+    req.params.id,
+    req.body
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "admin updated successfully!",
+    data: result,
+  });
+});
+const deleteAdminById = catchAsync(async (req, res) => {
+  const result = await AdminServices.deleteAdminById(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "admin deleted successfully!",
+    data: result,
+  });
+});
 
-const AdminControllers = { getAdmins, getAdminById };
+const AdminControllers = {
+  getAdmins,
+  getAdminById,
+  updateAdminDataById,
+  deleteAdminById,
+};
 export default AdminControllers;

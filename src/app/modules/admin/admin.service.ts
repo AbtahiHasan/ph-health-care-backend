@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Admin, Prisma, PrismaClient, UserStatus } from "@prisma/client";
 
 import prisma from "../../lib/prisma";
 
@@ -67,5 +67,68 @@ const getAdminById = async (id: string) => {
   return result;
 };
 
-const AdminServices = { getAdmins, getAdminById };
+const updateAdminDataById = async (id: string, data: Partial<Admin>) => {
+  const isExits = await prisma.admin.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExits) {
+    throw new Error("Admin not found");
+  }
+
+  const result = await prisma.admin.update({
+    where: {
+      id,
+    },
+    data,
+  });
+  return result;
+};
+
+const deleteAdminById = async (id: string): Promise<Admin | null> => {
+  const isExits = await prisma.admin.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExits) {
+    throw new Error("Admin not found");
+  }
+
+  const deletedAdmin = prisma.admin.update({
+    where: {
+      id,
+    },
+    data: {
+      isDeleted: true,
+    },
+  });
+
+  const deletedUser = prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      isDeleted: true,
+      status: UserStatus.DELETED,
+    },
+  });
+
+  const [deletedAdminData, deletedUserData] = await prisma.$transaction([
+    deletedAdmin,
+    deletedUser,
+  ]);
+
+  return deletedAdminData;
+};
+
+const AdminServices = {
+  getAdmins,
+  getAdminById,
+  updateAdminDataById,
+  deleteAdminById,
+};
 export default AdminServices;
