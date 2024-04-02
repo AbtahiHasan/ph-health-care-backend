@@ -109,7 +109,7 @@ const deleteAdminById = async (id: string): Promise<Admin | null> => {
 
   const deletedUser = prisma.user.update({
     where: {
-      id,
+      email: isExits.email,
     },
     data: {
       isDeleted: true,
