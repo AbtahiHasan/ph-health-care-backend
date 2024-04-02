@@ -24,5 +24,15 @@ const getAdmins = catchAsync(async (req, res) => {
   });
 });
 
-const AdminControllers = { getAdmins };
+const getAdminById = catchAsync(async (req, res) => {
+  const result = await AdminServices.getAdminById(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "single admin fetched successfully!",
+    data: result,
+  });
+});
+
+const AdminControllers = { getAdmins, getAdminById };
 export default AdminControllers;

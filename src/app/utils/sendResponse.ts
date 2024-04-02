@@ -5,7 +5,7 @@ type TResponse<T> = {
   success: boolean;
   message?: string;
   data: T;
-  meta: {
+  meta?: {
     page: number;
     limit: number;
     total: number;
