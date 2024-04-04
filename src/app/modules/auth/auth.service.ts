@@ -12,7 +12,7 @@ const loginInUser = async (payload: ILogin) => {
       email: payload.email,
     },
   });
-  console.log({ user });
+
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -51,6 +51,39 @@ const loginInUser = async (payload: ILogin) => {
   };
 };
 
-const AuthServices = { loginInUser };
+const refreshToken = async (token: string) => {
+  const payload = jwtHelpers.verifyToken({
+    token,
+    secret: config.jwt_refresh_secret!,
+  });
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: payload?.email,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "You are unauthorized");
+  }
+
+  if (user.status === "DELETED") {
+    throw new AppError(httpStatus.UNAUTHORIZED, "You are unauthorized");
+  }
+  if (user.status === "BLOCKED") {
+    throw new AppError(httpStatus.UNAUTHORIZED, "You are unauthorized");
+  }
+
+  const accessToken = jwtHelpers.createToken({
+    payload: { email: payload?.email, role: payload?.role },
+    secret: config.jwt_access_secret!,
+    expiresIn: config.jwt_access_expires_in!,
+  });
+  return {
+    accessToken,
+  };
+};
+
+const AuthServices = { loginInUser, refreshToken };
 
 export default AuthServices;
