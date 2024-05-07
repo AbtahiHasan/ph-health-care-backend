@@ -13,18 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  DOCTOR
-  PATIENT
-}
 
-enum UserStatus {
-  ACTIVE
-  BLOCKED
-  DELETED
-}
+
 
 model User {
   id                 String     @id @default(uuid())
@@ -57,10 +47,6 @@ model Admin {
   @@map("admins")
 }
 
-enum Gender {
-  MALE
-  FEMALE
-}
 
 model Doctor {
   id String   @id @default(uuid())
@@ -96,4 +82,23 @@ model Patient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("patients")
+}
+
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
