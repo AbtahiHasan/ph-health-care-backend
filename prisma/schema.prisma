@@ -35,6 +35,7 @@ model User {
   needPasswordChange Boolean    @default(true)
   status             UserStatus @default(ACTIVE)
   admin              Admin?
+  doctor             Doctor?
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
@@ -53,4 +54,30 @@ model Admin {
   updatedAt     DateTime @updatedAt
 
   @@map("admins")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+model Doctor {
+  id String   @id @default(uuid())
+  name String
+  email String @unique
+  profilePhoto String
+  contactNumber String
+  address String
+  registrationNumber String
+  experience Int
+  gender Gender
+  appointmentFee Int
+  qualification String
+  currentWorkingPlace String
+  designaton String
+  isDeleted Boolean @default(false)
+  averageRating Float
+  user User @relation(fields: [email], references: [email])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
