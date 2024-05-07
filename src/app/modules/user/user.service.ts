@@ -5,8 +5,19 @@ import config from "../../config";
 import { IFile } from "../../interface/file";
 import { fileUploader } from "../../helper/fileUploader";
 import { Request } from "express";
+import AppError from "../../error/AppError";
+import httpStatus from "http-status";
 
 const createAdmin = async (req: Request) => {
+  const isUserExists = await db.user.findUnique({
+    where: {
+      email: req.body.admin.email,
+    },
+  });
+
+  if (isUserExists)
+    throw new AppError(httpStatus.CONFLICT, "User already exists");
+
   const file = req.file as IFile;
 
   if (file) {
@@ -18,7 +29,7 @@ const createAdmin = async (req: Request) => {
 
   const hashPassword = await bcrypt.hash(
     payload?.password,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds || "10")
   );
 
   const user = db.user.create({
@@ -33,8 +44,8 @@ const createAdmin = async (req: Request) => {
     data: payload?.admin,
   });
 
-  const result = await db.$transaction([user, admin]);
-
+  const result = (await db.$transaction([user, admin])) as any;
+  delete result[0].password;
   return result;
 };
 
